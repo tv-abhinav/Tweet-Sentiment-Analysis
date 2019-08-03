@@ -1,12 +1,16 @@
-from sklearn.metrics import accuracy_score
+import sklearn.metrics as skm
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import HashingVectorizer
 import pandas as pd
-# from sklearn.naive_bayes import GaussianNB
-from sklearn.linear_model import LogisticRegressionCV
+from sklearn.model_selection import cross_val_score
+from sklearn.naive_bayes import BernoulliNB
+# from sklearn.linear_model import LogisticRegressionCV
+# from sklearn.ensemble import RandomForestClassifier
+# clf = tree.DecisionTreeClassifier()
+# # clf = RandomForestClassifier(   n_estimators=10, max_depth=None, min_samples_split=2, random_state=0)
 # reg = linear_model.LinearRegression()
 HV = HashingVectorizer(n_features=2**4)
-# gnb = GaussianNB()
+gnb = BernoulliNB(alpha=0.8)
 trainCSV = pd.read_csv("train.csv", encoding="ISO-8859-1")
 df = pd.DataFrame(trainCSV)
 df = df.drop(['ItemID'], axis=1)
@@ -25,7 +29,10 @@ xTrain = X.toarray()
 # yTrain = yTrain.toarray()
 # print(yTrain[:5])
 xTest = Y.toarray()
-clf = LogisticRegressionCV(
-    cv=5, random_state=0, multi_class='multinomial').fit(xTrain, yTrain)
-Ypred = clf.predict(xTest)
-print(clf.score(xTest, yTest))
+# scores = cross_val_score(gnb, xTest, yTest, cv=5)
+clf = gnb.fit(xTrain, yTrain).predict(xTest)
+print(skm.classification_report(yTest, clf))
+print(skm.confusion_matrix(yTest, clf))
+# clf = clf.fit(xTrain, yTrain)
+# Ypred = clf.predict(xTest)
+# print(clf.score(xTest, yTest))
